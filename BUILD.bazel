@@ -2,39 +2,24 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
 
-# cc_library(
-#     name = "utils",
-#     srcs = [
-#         "core/ray.cpp",
-#         "core/vec3.cpp",
-#         "main/sceneManager.cpp",
-#         "obj/generators.cpp",
-#         "obj/objects.cpp",
-#         "main/model.cpp",
-#         "main/simulator.cpp",
-#         "main/rayTracer.cpp"
-#     ],
-#     hdrs = [
-#         "constants.h",
-#         "core/ray.h",
-#         "core/vec3.h",
-#         "main/sceneManager.h",
-#         "obj/generators.h",
-#         "obj/objects.h",
-#         "main/model.h",
-#         "main/simulator.h",
-#         "main/rayTracer.h",
-#     ],
-# )
+cc_library(
+    name = "utils",
+    srcs = [
+        "main/main.cpp",
+    ],
+    hdrs = [
+        "main/main.h",
+    ],
+)
 
-# cc_test(
-#     name = "object_utils_test",
-#     srcs = [
-#         "tests/object_utils_test.cpp",
-#     ],
+cc_test(
+    name = "babyTest",
+    srcs = [
+        "tests/baby_test.cpp",
+    ],
 
-#     deps = [
-#         ":utils",
-#         "@com_google_googletest//:gtest_main",
-#     ],
-# )
+    deps = [
+        ":utils",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
