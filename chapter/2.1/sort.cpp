@@ -29,7 +29,7 @@ void selectionSort(std::vector<float> &container) {
   }
 }
 
-void mergeSort(std::vector<float> &container) {
+void mergeSorted(std::vector<float> &container) {
 
   // TODO: finish this. This implementation is wrong because this will be
   // recursive ;)
