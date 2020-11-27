@@ -28,4 +28,27 @@ void selectionSort(std::vector<float> &container) {
     container[index] = minimum;
   }
 }
+
+void mergeSort(std::vector<float> &container) {
+
+  // TODO: finish this. This implementation is wrong because this will be
+  // recursive ;)
+
+  int cuttingBorder = container.size() / 2;
+  std::vector<float> left(cuttingBorder);
+  std::vector<float> right(container.size() - cuttingBorder);
+
+  for (int index = 0; index < cuttingBorder; ++index) {
+    left[index] = container[index];
+    right[index] = container[index + cuttingBorder];
+  }
+
+  left.push_back(std::numeric_limits<float>::max());
+  right.push_back(std::numeric_limits<float>::max());
+
+  for (int index = 0; index < container.size(); ++index) {
+    continue;
+  }
+}
+
 } // namespace algorithms
