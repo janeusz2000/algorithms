@@ -5,17 +5,17 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 cc_library(
     name = "utils",
     srcs = [
-        "chapter/2.1/page17.cpp",
+        "chapter/2.1/sort.cpp",
     ],
     hdrs = [
-        "chapter/2.1/page17.h",
+        "chapter/2.1/sort.h",
     ],
 )
 
 cc_test(
     name = "2.1_test",
     srcs = [
-        "tests/2.1_test.cpp",
+        "tests/sort_test.cpp",
     ],
 
     deps = [

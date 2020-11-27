@@ -1,5 +1,5 @@
-#ifndef PAGE17
-#define PAGE17
+#ifndef SORT_H
+#define SORT_H
 
 #include <vector>
 namespace algorithms {
