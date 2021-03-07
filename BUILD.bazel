@@ -1,4 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "cc_binary")
 
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
 
@@ -22,4 +22,11 @@ cc_test(
         ":utils",
         "@com_google_googletest//:gtest_main",
     ],
+)
+
+cc_binary(
+    name = "matrixMultiplication",
+    srcs = [
+        "chapter/4.1/matrixMultiplication.cpp",
+    ]
 )
