@@ -9,6 +9,7 @@ cc_library(
     ],
     hdrs = [
         "chapter/2.1/sort.h",
+        "chapter/6.0/binaryTrees.hpp",
     ],
 )
 
@@ -22,6 +23,14 @@ cc_test(
         ":utils",
         "@com_google_googletest//:gtest_main",
     ],
+)
+
+cc_binary(
+    name = "main",
+    srcs = ["main.cpp"],
+    deps = [
+        ":utils",
+    ]
 )
 
 cc_binary(
