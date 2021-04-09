@@ -1,25 +1,10 @@
-// https://www.codewars.com/kata/57658bfa28ed87ecfa00058a
+// https://www.codewars.com/kata/57658bfa28ed87ecfa00058a/train/cpp
 
 #include <cmath>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <utility>
-
-void printVec(const std::vector<char> &vec) {
-  std::cout << "[";
-  for (const char &elem : vec) {
-    std::cout << elem << ", ";
-  }
-  std::cout << std::endl;
-}
-
-void printPaths(const std::vector<std::vector<char>> &vec) {
-  for (const auto &path : vec) {
-    printVec(path);
-  }
-  std::cout << "===========" << std::endl;
-}
 
 const std::unordered_map<char, std::pair<int, int>> kDirections = {
     {'N', {0, -1}}, {'S', {0, 1}}, {'E', {-1, 0}}, {'W', {1, 0}}};
@@ -57,7 +42,7 @@ private:
 
 Maze::Maze(std::string_view mazePlan) {
 
-  std::string_view parsedMazePlan = parseMazePlan(mazePlan);
+  std::string parsedMazePlan = parseMazePlan(mazePlan);
   mazeDimention_ = getDesiredMazeDimention(parsedMazePlan);
   reserveMemoryForMaze(mazeDimention_);
   populateMaze(parsedMazePlan, mazeDimention_);
@@ -129,61 +114,56 @@ int Maze::getDesiredMazeDimention(std::string_view parsedMazePlan) const {
 }
 
 int path_finder(std::string_view mazePlan) {
+
+  if (mazePlan == ".") {
+    return 0;
+  }
+
   std::cout << std::endl;
   Maze maze(mazePlan);
   maze.print();
-  std::vector<char> destinations = maze.getAllPossibleDirectionsFromPoint(0, 0);
 
-  int x = 0, y = 0;
-  std::vector<std::vector<char>> paths;
-  for (int iteration = 0; iteration < std::pow(maze.getMazeDimention(), 3);
-       ++iteration) {
+  std::vector<std::pair<int, int>> archivedPositions = {
+      std::make_pair<int, int>(0, 0)};
+  std::vector<std::pair<int, int>> previousPositions;
 
-    if (iteration == 0) {
-      std::vector<char> availableDir =
-          maze.getAllPossibleDirectionsFromPoint(x, y);
+  for (size_t index = 1; index <= std::pow(maze.getMazeDimention(), 2);
+       ++index) {
 
-      if (availableDir.empty()) {
-        break;
-      }
+    std::vector<std::pair<int, int>> tempPositions;
+    const size_t archivedPositionSize = archivedPositions.size();
+    for (size_t archivedPositionIndex = 0;
+         archivedPositionIndex < archivedPositionSize;
+         ++archivedPositionIndex) {
 
-      for (const char elem : availableDir) {
-        std::vector<char> temp = {elem};
-        paths.push_back(temp);
-      }
+      int currentX = archivedPositions[archivedPositionIndex].first,
+          currentY = archivedPositions[archivedPositionIndex].second;
 
-    } else {
-      size_t numberOfPaths = paths.size();
-      for (size_t pathIndex = 0; pathIndex < paths.size(); ++pathIndex) {
+      const std::vector<char> availableDirections =
+          maze.getAllPossibleDirectionsFromPoint(currentX, currentY);
 
-        auto currentCoordinate = getCurrentPosition(paths[pathIndex]);
+      for (const char direction : availableDirections) {
+        int archivedX = currentX + kDirections.at(direction).first;
+        int archivedY = currentY + kDirections.at(direction).second;
 
-        if (currentCoordinate.first == maze.getMazeDimention() - 1 &&
-            currentCoordinate.second == maze.getMazeDimention() - 1) {
-          return paths[pathIndex].size();
+        if (archivedX == maze.getMazeDimention() - 1 &&
+            archivedY == maze.getMazeDimention() - 1) {
+          return index;
         }
 
-        std::vector<char> availableDir = maze.getAllPossibleDirectionsFromPoint(
-            currentCoordinate.first, currentCoordinate.second);
-
-        int numberOfNewPaths = availableDir.size() - 1;
-        for (char dir : availableDir) {
-
-          if (numberOfNewPaths > 0) {
-
-            std::vector<char> temp = paths[pathIndex];
-            temp.push_back(dir);
-            paths.push_back(temp);
-
-            --numberOfPaths;
-          } else {
-            paths[pathIndex].push_back(dir);
-          }
+        auto currentPosition = std::make_pair<int, int>(std::move(archivedX),
+                                                        std::move(archivedY));
+        if (std::find(tempPositions.begin(), tempPositions.end(),
+                      currentPosition) == tempPositions.end() &&
+            std::find(previousPositions.begin(), previousPositions.end(),
+                      currentPosition) == previousPositions.end()) {
+          tempPositions.push_back(currentPosition);
         }
       }
     }
-    printPaths(paths);
-  }
 
+    previousPositions = archivedPositions;
+    archivedPositions = tempPositions;
+  }
   return -1;
 }
