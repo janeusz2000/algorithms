@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-
 int charToInt(char letter) { return letter - '0'; }
 
 std::vector<std::string> performMultiplication(std::string_view a,

@@ -2,40 +2,56 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "cc_binary")
 
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
 
+# cc_library(
+#     name = "utils",
+#     srcs = [
+#         "chapter/2.1/sort.cpp",
+#     ],
+#     hdrs = [
+#         "chapter/2.1/sort.h",
+#         "chapter/6.0/binaryTrees.hpp",
+#     ],
+# )
+
+# cc_test(
+#     name = "2.1_test",
+#     srcs = [
+#         "tests/sort_test.cpp",
+#     ],
+
+#     deps = [
+#         ":utils",
+#         "@com_google_googletest//:gtest_main",
+#     ],
+# )
+
+# cc_binary(
+#     name = "main",
+#     srcs = ["main.cpp"],
+#     deps = [
+#         ":utils",
+#     ]
+# )
+
+# cc_binary(
+#     name = "matrixMultiplication",
+#     srcs = [
+#         "chapter/4.1/matrixMultiplication.cpp",
+#     ]
+# )
+
 cc_library(
-    name = "utils",
-    srcs = [
-        "chapter/2.1/sort.cpp",
-    ],
-    hdrs = [
-        "chapter/2.1/sort.h",
-        "chapter/6.0/binaryTrees.hpp",
-    ],
+    name = "solutions",
+    hdrs = glob(["**/*.hpp"])
 )
 
 cc_test(
-    name = "2.1_test",
+    name = "Beer_test",
     srcs = [
-        "tests/sort_test.cpp",
+        "tests/Beermid_test.cpp",
     ],
-
     deps = [
-        ":utils",
+        ":solutions",
         "@com_google_googletest//:gtest_main",
     ],
-)
-
-cc_binary(
-    name = "main",
-    srcs = ["main.cpp"],
-    deps = [
-        ":utils",
-    ]
-)
-
-cc_binary(
-    name = "matrixMultiplication",
-    srcs = [
-        "chapter/4.1/matrixMultiplication.cpp",
-    ]
 )
