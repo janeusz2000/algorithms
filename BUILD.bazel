@@ -55,3 +55,14 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "snail_test",
+    srcs = [
+        "tests/snailSort_test.cpp",
+    ],
+    deps = [
+        ":solutions",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
