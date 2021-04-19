@@ -120,8 +120,6 @@ std::vector<int> snail(std::vector<std::vector<int>> &snail_map) {
 
     std::vector<int> xSequence = createXSequence(snail_map[0].size());
     std::vector<int> ySequence = createYSequence(snail_map[0].size());
-    printVec(xSequence);
-    printVec(ySequence);
 
     for (size_t index = 0; index < xSequence.size(); ++index) {
       int y = xSequence[index];
