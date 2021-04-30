@@ -66,3 +66,14 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "calculateExpression_test",
+    srcs = [
+        "tests/calculateExpression_test.cpp",
+    ],
+    deps = [
+        ":solutions",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
