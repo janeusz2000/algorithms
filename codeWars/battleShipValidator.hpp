@@ -43,6 +43,7 @@ public:
   std::vector<Point> getPointTerritory(const Point &point);
 
   const std::vector<Point> &getShip() const { return shipPoints_; }
+  const std::vector<Point> &getTerritory() const { return shipTerritory_; }
   int size() const;
 
   void printItself(std::ostream &os) const noexcept override;
@@ -101,10 +102,7 @@ std::vector<Point> Ship::getPointTerritory(const Point &point) {
 
   for (int currentX = x - 1; currentX <= x + 1; ++currentX) {
     for (int currentY = y - 1; currentY <= y + 1; ++currentY) {
-      if (currentX >= 0 && currentX < size() && currentY >= 0 &&
-          currentY < size()) {
-        outputTerritory.push_back(std::make_pair(currentX, currentY));
-      }
+      outputTerritory.push_back(std::make_pair(currentX, currentY));
     }
   }
 
@@ -114,8 +112,8 @@ std::vector<Point> Ship::getPointTerritory(const Point &point) {
 Ship::Ship(const Point &point) { addShipNewPoint(point); }
 
 bool Ship::isPointInShipTerritory(const Point &point) const {
-  return std::find(shipPoints_.cbegin(), shipPoints_.cend(), point) !=
-         shipPoints_.cend();
+  return (std::find(shipTerritory_.cbegin(), shipTerritory_.cend(), point) !=
+          shipTerritory_.cend());
 }
 
 void Ship::addShipNewPoint(const Point &point) {
@@ -161,7 +159,9 @@ bool Ship::isShapeValid() const {
 
 void Ship::recalculateShipTerritory() {
   shipTerritory_.clear();
+
   for (auto &point : shipPoints_) {
+
     std::vector<Point> pointNeighboors = getPointTerritory(point);
     for (auto &neighboorPoint : pointNeighboors) {
       if (std::find(shipTerritory_.cbegin(), shipTerritory_.cend(),
