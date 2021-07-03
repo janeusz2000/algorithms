@@ -1,176 +1,153 @@
-// https://www.codewars.com/kata/5  2a78825cdfc2cfc87000005
+// https://www.codewars.com/kata/52a78825cdfc2cfc87000005
+
+#ifndef EVALUATE_MATHEMATICAL_EXPRESSION
+#define EVALUATE_MATHEMATICAL_EXPRESSION
 
 #include <functional>
 #include <iostream>
-#include <numeric>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
-// HEADER FILE
-char shortenOperation(char previousOperation, char nextOperation);
-bool stringHasDigit(std::string_view str);
-double convertStringToDouble(std::string_view number);
-char transformOperationIfEmpty(char op);
-std::string performperformCalculations(char op, std::string_view number1,
-                                       std::string_view number2);
-std::string addTwoString(std::string_view number1, std::string_view number2);
-bool parsingNumbersIsFinished(char op, char newCharacter, std::string_view num1,
-                              std::string_view num2);
-bool characterIsAnOperation(char newCharacter);
-void parseNumbers(char op, char newDigit, std::string *num1, std::string *num2);
-bool areOperatorsCombined(char previousOperator, char newOperator);
-std::string_view getSubExpression(size_t currentIndex,
-                                  std::string_view expression);
-std::string_view performCalcAsString(std::string_view expression);
-double performCalc(std::string_view expression);
-bool expressionStartsWithMinusOperator(char character, std::string *num1,
-                                       std::string *num2);
-double calc(std::string_view expression);
-std::vector<std::string_view> parseExpression(std::string_view expression);
-void printExpressions(const std::vector<std::string_view> expressions);
-std::vector<size_t> expressionEdgePositions(std::string_view expression);
+enum class TokenType {
+  NUMBER = 0,
+  PLUS,
+  MINUS,
+  MULTIPLIES,
+  DIVIDES,
+  UNARY_OPERATOR
+};
 
-// CPP FILE
-const std::unordered_map<char, std::function<double(double, double)>>
-    operations({{'+', std::plus<>()},
-                {'-', std::minus<>()},
-                {'*', std::multiplies<>()},
-                {'/', std::divides<>()}});
+class TokenFactory;
+class Token {
+public:
+  explicit Token(TokenType tokenType, double value, const TokenFactory &factory)
+      : tokenType_(tokenType), value_(value), factory_(factory){};
 
-char shortenOperation(char previousOperation, char nextOperation) {
-  return previousOperation == ' '                           ? nextOperation
-         : previousOperation == '-' && nextOperation == '-' ? '+'
-         : previousOperation == '+' && nextOperation == '-' ? '-'
-                                                            : nextOperation;
-}
+  TokenType getType() const;
+  double value() const;
+  int getPrecedence() const;
 
-bool stringHasDigit(std::string_view str) {
-  return std::find_if(str.begin(), str.end(), ::isdigit) != str.end();
-}
-
-double convertStringToDouble(std::string_view number) {
-  return stringHasDigit(number) ? std::stod(number.data()) : 0;
-}
-
-char transformOperationIfEmpty(char op) { return op == ' ' ? '+' : op; }
-
-std::string performperformCalculations(char op, std::string_view number1,
-                                       std::string_view number2) {
-  op = transformOperationIfEmpty(op);
-  double num1 = convertStringToDouble(number1);
-  double num2 = convertStringToDouble(number2);
-  double output = operations.at(op)(num1, num2);
-  std::cout << num1 << " " << op << " " << num2 << " = " << output << std::endl;
-  return std::to_string(output);
-}
-
-std::string addTwoString(std::string_view number1, std::string_view number2) {
-  double num1 = convertStringToDouble(number1);
-  double num2 = convertStringToDouble(number2);
-  double output = num1 + num2;
-  std::cout << num1 << " + " << num2 << " = " << output << std::endl;
-
-  return std::to_string(output);
-}
-
-bool parsingNumbersIsFinished(char op, char newCharacter, std::string_view num1,
-                              std::string_view num2) {
-  return (newCharacter == ' ' ||
-          operations.find(newCharacter) != operations.end()) &&
-         stringHasDigit(num1) && stringHasDigit(num2);
-}
-
-bool characterIsAnOperation(char newCharacter) {
-  return operations.find(newCharacter) != operations.end();
-}
-
-void parseNumbers(char op, char newDigit, std::string *num1,
-                  std::string *num2) {
-  if (op == ' ') {
-    *num1 += newDigit;
-    return;
+  Token &operator=(const Token &other) {
+    tokenType_ = other.tokenType_;
+    value_ = other.value_;
+    return *this;
   }
-  *num2 += newDigit;
-}
 
-bool areOperatorsCombined(char previousOperator, char newOperator) {
-  return (previousOperator == '*' || previousOperator == '/') &&
-         newOperator == '-';
-}
+private:
+  TokenType tokenType_;
+  double value_;
+  const TokenFactory &factory_;
+};
 
-std::string_view getSubExpression(size_t currentIndex,
-                                  std::string_view expression) {
-  return expression.substr(currentIndex + 1,
-                           expression.find(')') - (currentIndex + 1));
-}
+TokenType Token::getType() const { return tokenType_; }
+double Token::value() const { return value_; }
 
-std::string_view performCalcAsString(std::string_view expression) {
-  double output = performCalc(expression);
-  return std::to_string(output);
-}
+const std::unordered_map<TokenType, std::function<double(double, double)>>
+    operationFunctions{{TokenType::PLUS, std::plus<>()},
+                       {TokenType::MINUS, std::minus<>()},
+                       {TokenType::MULTIPLIES, std::multiplies<>()},
+                       {TokenType::DIVIDES, std::divides<>()}};
+class TokenFactory {
+public:
+  explicit TokenFactory()
+      : operations_{{'+', TokenType::PLUS},
+                    {'-', TokenType::MINUS},
+                    {'/', TokenType::DIVIDES},
+                    {'*', TokenType::MULTIPLIES}},
+        precedences_{{TokenType::NUMBER, 0},
+                     {TokenType::PLUS, 1},
+                     {TokenType::MINUS, 1},
+                     {TokenType::DIVIDES, 2},
+                     {TokenType::MULTIPLIES, 2}} {};
 
-bool expressionStartsWithMinusOperator(char character, std::string *num1,
-                                       std::string *num2) {
-  return !stringHasDigit(*num1) && !stringHasDigit(*num2) && character == '-';
-}
+  Token createOperationToken(char operation) const {
+    return Token(operations_.at(operation), 0, *this);
+  }
 
-double performCalc(std::string_view expression) {
-  std::cout << "INPUT: " << expression << std::endl;
-  std::string num1, num2;
-  char op = ' ';
-  for (size_t index = 0; index < expression.size(); ++index) {
-    if (parsingNumbersIsFinished(op, expression[index], num1, num2)) {
-      num1 = performperformCalculations(op, num1, num2);
-      num2.clear();
-      op = characterIsAnOperation(expression[index]) ? expression[index] : ' ';
-    } else if (expressionStartsWithMinusOperator(expression[index], &num1,
-                                                 &num2)) {
-      num1 += expression[index];
-    }
+  Token createNumberToken(double value) const {
+    return Token(TokenType::NUMBER, value, *this);
+  }
 
-    else if (characterIsAnOperation(expression[index])) {
+  int getPrecedence(TokenType tokenType) const {
+    return precedences_.at(tokenType);
+  }
 
-      if (areOperatorsCombined(op, expression[index])) {
-        num2 = '-';
+  const std::unordered_map<char, TokenType> getOperations() const {
+    return operations_;
+  }
+
+private:
+  std::unordered_map<char, TokenType> operations_;
+  std::unordered_map<TokenType, int> precedences_;
+};
+
+int Token::getPrecedence() const { return factory_.getPrecedence(tokenType_); }
+
+std::vector<Token> parseExpression(std::string_view expression,
+                                   TokenFactory *tokenFactory) {
+  std::vector<Token> output;
+  std::vector<Token> operatorStack;
+
+  for (size_t index = 0; index < expression.length(); index++) {
+    if (tokenFactory->getOperations().find(expression[index]) !=
+        tokenFactory->getOperations().end()) {
+      Token operationToken =
+          tokenFactory->createOperationToken(expression[index]);
+
+      if (operatorStack.empty() ||
+          (!operatorStack.empty() &&
+           operatorStack[operatorStack.size() - 1].getPrecedence() <=
+               operationToken.getPrecedence())) {
+        operatorStack.push_back(operationToken);
       } else {
-        op = shortenOperation(op, expression[index]);
+        output.insert(output.end(), operatorStack.rbegin(),
+                      operatorStack.rend());
+
+        operatorStack.clear();
+        operatorStack.push_back(operationToken);
       }
-    } else if (expression[index] == '(') {
-      std::string_view subExpression = getSubExpression(index, expression);
-      double temp = num2[0] == '-' ? -1 * performCalc(subExpression)
-                                   : performCalc(subExpression);
-      num2 = std::to_string(temp);
-      num1 = performperformCalculations(op, num1, num2);
-      num2.clear();
-      index += subExpression.size();
-      op = ' ';
-    } else {
-      parseNumbers(op, expression[index], &num1, &num2);
+
+    } else if (isdigit(expression[index])) {
+      char *endPoint;
+      double value = std::strtod(expression.data() + index, &endPoint);
+      index += endPoint - (expression.data() + index) - 1;
+      output.push_back(tokenFactory->createNumberToken(value));
     }
   }
-  double result = std::stod(performperformCalculations(op, num1, num2));
-  return result;
-}
 
-std::vector<std::string_view> parseExpression(std::string_view expression) {
-  std::vector<std::string_view> outputExpressions;
-  outputExpressions.push_back(expression);
-  printExpressions(outputExpressions);
-  return outputExpressions;
-}
-
-void printExpressions(const std::vector<std::string_view> expressions) {
-  std::cout << "PRINTING EXPRESSIONS:\n";
-  for (const auto &expression : expressions) {
-    std::cout << "\t" << expression << "\n";
+  if (!operatorStack.empty()) {
+    output.insert(output.end(), operatorStack.rbegin(), operatorStack.rend());
   }
-  std::cout << std::endl;
+
+  return output;
 }
 
-double calc(std::string_view expression) {
-  std::vector<std::string_view> expressions = parseExpression(expression);
-  return std::accumulate(expressions.begin(), expressions.end(), 0.0,
-                         [&](double acc, std::string_view curExpression) {
-                           return acc + performCalc(curExpression);
-                         });
+double performOperation(Token operation, Token number1, Token number2) {
+  return operationFunctions.at(operation.getType())(number1.value(),
+                                                    number2.value());
 }
+
+double solve(std::string_view expression) {
+  TokenFactory tokenFactory;
+  std::vector<Token> parsedExpression =
+      parseExpression(expression, &tokenFactory);
+  while (parsedExpression.size() != 1) {
+    auto operationToken = std::find_if(
+        parsedExpression.begin(), parsedExpression.end(), [&](Token token) {
+          return operationFunctions.find(token.getType()) !=
+                 operationFunctions.end();
+        });
+
+    Token operation = *operationToken;
+    Token number2 = *(operationToken - 1);
+    Token number1 = *(operationToken - 2);
+
+    double result = performOperation(operation, number1, number2);
+    parsedExpression.erase(operationToken);
+    parsedExpression.erase(operationToken - 1);
+    *(operationToken - 2) = tokenFactory.createNumberToken(result);
+  }
+  return parsedExpression[0].value();
+}
+#endif
