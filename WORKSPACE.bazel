@@ -1,7 +1,25 @@
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive");
 
 http_archive(
     name = "com_google_googletest",
     strip_prefix = "googletest-master",
     url = "https://github.com/google/googletest/archive/master.zip",
 )
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+git_repository(
+    name = "com_github_nelhage_rules_boost",
+    commit = "fb9f3c9a6011f966200027843d894923ebc9cd0b",
+    remote = "https://github.com/nelhage/rules_boost",
+    shallow_since = "1591047380 -0700",
+)
+
+http_archive(
+  name = "com_google_absl",
+  urls = ["https://github.com/abseil/abseil-cpp/archive/98eb410c93ad059f9bba1bf43f5bb916fc92a5ea.zip"],
+  strip_prefix = "abseil-cpp-2f25e6ea5f91d1646aca2337719c9b4deb64100a",
+)
+
+
+load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+boost_deps()

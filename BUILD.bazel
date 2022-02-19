@@ -42,7 +42,10 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "cc_binary")
 
 cc_library(
     name = "solutions",
-    hdrs = glob(["**/*.hpp"])
+    hdrs = glob(["**/*.hpp"]),
+    deps = [
+        "@boost//:pfr",
+    ]
 )
 
 cc_test(
@@ -90,6 +93,15 @@ cc_test(
 cc_test(
     name = "battleShip_test",
     srcs = ["tests/battleShipValidator_test.cpp"],
+    deps = [
+        ":solutions",
+        "@com_google_googletest//:gtest_main"
+    ],
+)
+
+cc_test(
+    name= "skyscrappers_test",
+    srcs = ["tests/skyscrappers_test.cpp"],
     deps = [
         ":solutions",
         "@com_google_googletest//:gtest_main"
