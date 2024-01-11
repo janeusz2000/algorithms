@@ -17,7 +17,7 @@ struct EdgeFactory {
 private:
   std::unordered_map<int, std::vector<std::vector<int>>> edgeAllPossibleKeys_;
   int size_;
-}
+};
 
 EdgeFactory::EdgeFactory(int size)
     : size_(size) {
@@ -31,6 +31,7 @@ std::vector<std::vector<int>> EdgeFactory::getEdges(int key) {
 
 std::vector<std::vector<int>> SolvePuzzle(const std::vector<int> &clues) {
   EdgeFactory edges(/*size=*/6);
+  return {};
 }
 
 #endif

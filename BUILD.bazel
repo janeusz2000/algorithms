@@ -43,9 +43,6 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "cc_binary")
 cc_library(
     name = "solutions",
     hdrs = glob(["**/*.hpp"]),
-    deps = [
-        "@boost//:pfr",
-    ]
 )
 
 cc_test(
@@ -57,6 +54,17 @@ cc_test(
         ":solutions",
         "@com_google_googletest//:gtest_main",
     ],
+)
+
+cc_test(
+  name = "square_sum_test",
+  srcs = [
+    "tests/squareSumTest.cpp",
+  ],
+  deps = [
+    ":solutions",
+    "@com_google_googletest//:gtest_main",
+  ],
 )
 
 cc_test(

@@ -1,4 +1,2 @@
-test --test_output=errors
-build -c opt
-build:_win --cxxopt=/std:c++17
-build:_gcc --cxxopt=-std=c++17
+test --test_output=errors --test_arg=--gtest_color=yes --test_timeout=4
+build -c opt --cxxopt=-std=c++17
